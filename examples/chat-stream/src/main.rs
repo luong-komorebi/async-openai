@@ -10,12 +10,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new();
 
     let request = CreateChatCompletionRequestArgs::default()
-        .model("gpt-3.5-turbo")
+        .model("gpt-5")
         .max_tokens(512u32)
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .messages([ChatCompletionRequestUserMessageArgs::default()
             .content("Write a marketing blog praising and introducing Rust library async-openai")
             .build()?
             .into()])
+        .tools(vec![serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})])
         .build()?;
 
     let mut stream = client.chat().create_stream(request).await?;

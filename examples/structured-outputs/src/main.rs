@@ -45,15 +45,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u32)
-        .model("gpt-4o-2024-08-06")
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .messages([
             ChatCompletionRequestSystemMessage::from(
-                "You are a helpful math tutor. Guide the user through the solution step by step.",
-            )
-            .into(),
-            ChatCompletionRequestUserMessage::from("how can I solve 8x + 7 = -23").into(),
+                "You are a helpful assistant."
+            ),
+            ChatCompletionRequestUserMessage::from(
+                "What is 2 + 2? Explain your reasoning step by step."
+            ),
         ])
         .response_format(response_format)
+        .tools(vec![serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})])
         .build()?;
 
     let response = client.chat().create(request).await?;

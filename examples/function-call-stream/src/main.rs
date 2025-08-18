@@ -18,11 +18,11 @@ use serde_json::json;
 async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new();
 
-    let model = "gpt-4o-mini";
-
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u32)
-        .model(model)
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .messages([ChatCompletionRequestUserMessageArgs::default()
             .content("What's the weather like in Boston?")
             .build()?
@@ -43,6 +43,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             }))
             .build()?])
         .function_call("auto")
+        .tools(vec![serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})])
         .build()?;
 
     let mut stream = client.chat().create_stream(request).await?;

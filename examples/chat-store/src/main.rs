@@ -14,7 +14,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u32)
-        .model("gpt-3.5-turbo")
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .store(true)
         .metadata(json!({
             "role": "manager",
@@ -31,6 +33,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .build()?
                 .into(),
         ])
+        // Example custom tool usage for GPT-5
+        .tools(vec![serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})])
         .build()?;
 
     println!("{}", serde_json::to_string(&request).unwrap());

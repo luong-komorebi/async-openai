@@ -323,7 +323,7 @@ async fn create_embeddings() -> Result<(), Box<dyn Error>> {
     let client = get_gemini_client();
 
     let request = CreateEmbeddingRequestArgs::default()
-        .model("text-embedding-004")
+        .model("gpt-5-embedding")
         .input("The food was delicious and the waiter...")
         .build()?;
 

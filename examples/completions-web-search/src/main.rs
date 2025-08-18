@@ -11,7 +11,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(256u32)
-        .model("gpt-4o-mini-search-preview")
+        .model("gpt-5")
         .messages([ChatCompletionRequestUserMessageArgs::default()
             .content(user_prompt)
             .build()?

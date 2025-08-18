@@ -23,31 +23,22 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = Client::new();
 
-    let model = "gpt-4o-mini";
+    let model = "gpt-5";
 
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u32)
-        .model(model)
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .messages([ChatCompletionRequestUserMessageArgs::default()
             .content("What's the weather like in Boston?")
             .build()?
             .into()])
-        .functions([ChatCompletionFunctionsArgs::default()
-            .name("get_current_weather")
-            .description("Get the current weather in a given location")
-            .parameters(json!({
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
-                    },
-                    "unit": { "type": "string", "enum": ["celsius", "fahrenheit"] },
-                },
-                "required": ["location"],
-            }))
-            .build()?])
-        .function_call("auto")
+        .tools(vec![serde_json::json!({
+            "type": "custom",
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location"
+        })])
         .build()?;
 
     let response_message = client

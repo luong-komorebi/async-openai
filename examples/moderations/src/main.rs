@@ -5,7 +5,7 @@ use std::error::Error;
 async fn main() -> Result<(), Box<dyn Error>> {
     let client = Client::new();
 
-    let model = "omni-moderation-latest";
+    let model = "gpt-5-moderation";
 
     // single
     let request = CreateModerationRequestArgs::default()

@@ -11,7 +11,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Small distances suggest high relatedness and large distances suggest low relatedness.
 
     let request = CreateEmbeddingRequestArgs::default()
-        .model("text-embedding-ada-002")
+        .model("gpt-5-embedding")
         .input([
             "Why do programmers hate nature? It has too many bugs.",
             "Why was the computer cold? It left its Windows open.",

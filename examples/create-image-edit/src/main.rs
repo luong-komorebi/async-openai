@@ -16,6 +16,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .size(DallE2ImageSize::S1024x1024)
         .response_format(ImageResponseFormat::Url)
         .user("async-openai")
+        .model("gpt-5-image-edit")
         .build()?;
 
     let response = client.images().create_edit(request).await?;

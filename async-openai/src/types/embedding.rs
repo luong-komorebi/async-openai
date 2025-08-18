@@ -51,6 +51,12 @@ pub struct CreateEmbeddingRequest {
     /// The number of dimensions the resulting output embeddings should have. Only supported in `text-embedding-3` and later models.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub dimensions: Option<u32>,
+    /// GPT-5: Optional verbosity control ("low", "medium", "high")
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub verbosity: Option<String>,
+    /// GPT-5: Optional reasoning effort ("minimal", "medium", "maximal")
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reasoning_effort: Option<String>,
 }
 
 /// Represents an embedding vector returned by embedding endpoint.

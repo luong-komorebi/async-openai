@@ -23,31 +23,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u32)
-        .model("gpt-4-1106-preview")
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .messages([ChatCompletionRequestUserMessageArgs::default()
             .content(user_prompt)
             .build()?
             .into()])
-        .tools(vec![ChatCompletionToolArgs::default()
-            .r#type(ChatCompletionToolType::Function)
-            .function(
-                FunctionObjectArgs::default()
-                    .name("get_current_weather")
-                    .description("Get the current weather in a given location")
-                    .parameters(json!({
-                        "type": "object",
-                        "properties": {
-                            "location": {
-                                "type": "string",
-                                "description": "The city and state, e.g. San Francisco, CA",
-                            },
-                            "unit": { "type": "string", "enum": ["celsius", "fahrenheit"] },
-                        },
-                        "required": ["location"],
-                    }))
-                    .build()?,
-            )
-            .build()?])
+        .tools(vec![serde_json::json!({
+            "type": "custom",
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location"
+        })])
         .build()?;
 
     let mut stream = client.chat().create_stream(request).await?;
@@ -222,7 +209,11 @@ async fn call_fn(name: &str, args: &str) -> Result<Value, Box<dyn std::error::Er
         HashMap::new();
     available_functions.insert("get_current_weather", get_current_weather);
 
-    let function_args: serde_json::Value = args.parse().unwrap();
+    // For custom tool type, args is plain text
+    let function_args: serde_json::Value = match serde_json::from_str(args) {
+        Ok(val) => val,
+        Err(_) => json!({ "arguments": args }),
+    };
 
     let location = function_args["location"].as_str().unwrap();
     let unit = function_args["unit"].as_str().unwrap_or("fahrenheit");

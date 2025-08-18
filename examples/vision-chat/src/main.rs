@@ -17,7 +17,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg";
 
     let request = CreateChatCompletionRequestArgs::default()
-        .model("gpt-4o-mini")
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .max_tokens(300_u32)
         .messages([ChatCompletionRequestUserMessageArgs::default()
             .content(vec![
@@ -36,7 +38,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     .into(),
             ])
             .build()?
-            .into()])
+        ])
+        // Example custom tool usage for GPT-5
+        .tools(vec![serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})])
         .build()?;
 
     println!("{}", serde_json::to_string(&request).unwrap());

@@ -24,11 +24,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     );
 
     // This should match whatever model is downloaded in Ollama docker container.
-    let model = "llama3.2:1b";
+    let model = "gpt-5";
 
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u32)
-        .model(model)
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .messages([
             ChatCompletionRequestSystemMessageArgs::default()
                 .content("You are a helpful assistant.")
@@ -47,6 +49,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .build()?
                 .into(),
         ])
+        .tools(vec![serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})])
         .build()?;
 
     println!("{}", serde_json::to_string(&request).unwrap());

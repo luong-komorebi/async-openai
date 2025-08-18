@@ -24,8 +24,11 @@ async fn chat(client: &Client<OpenAIConfig>) -> Result<(), Box<dyn Error>> {
                     "content": "What do you think about life?"
                 }
             ],
-            "model": "gpt-4o",
-            "store": false
+            "model": "gpt-5",
+            "store": false,
+            "verbosity": "medium",
+            "reasoning_effort": "minimal",
+            "tools": [{"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"}]
         }))
         .await?;
 

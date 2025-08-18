@@ -41,9 +41,12 @@ pub async fn structured_output<T: serde::Serialize + DeserializeOwned + JsonSche
 
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u32)
-        .model("gpt-4o-mini")
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .messages(messages)
         .response_format(response_format)
+        .tools(vec![serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})])
         .build()?;
 
     let client = Client::new();

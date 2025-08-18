@@ -16,7 +16,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let request = CreateResponseArgs::default()
         .max_output_tokens(512u32)
-        .model("gpt-4.1")
+        .model("gpt-5")
+        .verbosity("medium")
+        .reasoning_effort("minimal")
         .input(Input::Items(vec![InputItem::Message(
             InputMessageArgs::default()
                 .role(Role::User)
@@ -31,6 +33,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .require_approval(RequireApproval::Policy(RequireApprovalPolicy::Never))
                 .allowed_tools(AllowedTools::List(vec!["ask_question".to_string()]))
                 .build()?),
+            serde_json::json!({"type": "custom", "name": "my_custom_tool", "description": "A custom tool for GPT-5"})
         ])
         .build()?;
 

@@ -16,7 +16,7 @@ use bytes::Bytes;
 use super::{
     responses::{CodeInterpreterContainer, Input, InputContent, Role as ResponsesRole},
     AddUploadPartRequest, AudioInput, AudioResponseFormat, ChatCompletionFunctionCall,
-    ChatCompletionFunctions, ChatCompletionNamedToolChoice, ChatCompletionRequestAssistantMessage,
+    ChatCompletionNamedToolChoice, ChatCompletionRequestAssistantMessage,
     ChatCompletionRequestAssistantMessageContent, ChatCompletionRequestDeveloperMessage,
     ChatCompletionRequestDeveloperMessageContent, ChatCompletionRequestFunctionMessage,
     ChatCompletionRequestMessage, ChatCompletionRequestMessageContentPartAudio,
@@ -27,9 +27,9 @@ use super::{
     ChatCompletionRequestUserMessageContentPart, ChatCompletionToolChoiceOption, CreateFileRequest,
     CreateImageEditRequest, CreateImageVariationRequest, CreateMessageRequestContent,
     CreateSpeechResponse, CreateTranscriptionRequest, CreateTranslationRequest, DallE2ImageSize,
-    EmbeddingInput, FileInput, FilePurpose, FunctionName, Image, ImageInput, ImageModel,
-    ImageResponseFormat, ImageSize, ImageUrl, ImagesResponse, ModerationInput, Prompt, Role, Stop,
-    TimestampGranularity,
+    EmbeddingInput, FileInput, FilePurpose, FunctionName, FunctionObject, Image, ImageInput,
+    ImageModel, ImageResponseFormat, ImageSize, ImageUrl, ImagesResponse, ModerationInput, Prompt,
+    Role, Stop, TimestampGranularity,
 };
 
 /// for `impl_from!(T, Enum)`, implements
@@ -531,12 +531,13 @@ impl From<String> for ChatCompletionToolChoiceOption {
     }
 }
 
-impl From<(String, serde_json::Value)> for ChatCompletionFunctions {
+impl From<(String, serde_json::Value)> for FunctionObject {
     fn from(value: (String, serde_json::Value)) -> Self {
         Self {
             name: value.0,
             description: None,
-            parameters: value.1,
+            parameters: Some(value.1),
+            strict: None,
         }
     }
 }

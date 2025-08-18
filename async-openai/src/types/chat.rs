@@ -433,25 +433,6 @@ pub struct ChatCompletionResponseMessage {
 }
 
 #[derive(Clone, Serialize, Default, Debug, Deserialize, Builder, PartialEq)]
-#[builder(name = "ChatCompletionFunctionsArgs")]
-#[builder(pattern = "mutable")]
-#[builder(setter(into, strip_option), default)]
-#[builder(derive(Debug))]
-#[builder(build_fn(error = "OpenAIError"))]
-#[deprecated]
-pub struct ChatCompletionFunctions {
-    /// The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.
-    pub name: String,
-    /// A description of what the function does, used by the model to choose when and how to call the function.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-    /// The parameters the functions accepts, described as a JSON Schema object. See the [guide](https://platform.openai.com/docs/guides/text-generation/function-calling) for examples, and the [JSON Schema reference](https://json-schema.org/understanding-json-schema/) for documentation about the format.
-    ///
-    /// Omitting `parameters` defines a function with an empty parameter list.
-    pub parameters: serde_json::Value,
-}
-
-#[derive(Clone, Serialize, Default, Debug, Deserialize, Builder, PartialEq)]
 #[builder(name = "FunctionObjectArgs")]
 #[builder(pattern = "mutable")]
 #[builder(setter(into, strip_option), default)]
@@ -507,18 +488,18 @@ pub struct ResponseFormatJsonSchema {
 pub enum ChatCompletionToolType {
     #[default]
     Function,
+    Custom,
 }
 
-#[derive(Clone, Serialize, Default, Debug, Builder, Deserialize, PartialEq)]
-#[builder(name = "ChatCompletionToolArgs")]
-#[builder(pattern = "mutable")]
-#[builder(setter(into, strip_option), default)]
-#[builder(derive(Debug))]
-#[builder(build_fn(error = "OpenAIError"))]
+#[derive(Clone, Serialize, Debug, Deserialize, PartialEq)]
 pub struct ChatCompletionTool {
-    #[builder(default = "ChatCompletionToolType::Function")]
-    pub r#type: ChatCompletionToolType,
-    pub function: FunctionObject,
+    pub r#type: String, // "function" or "custom"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>, // for custom tools
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>, // for custom tools
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub function: Option<FunctionObject>, // for function tools
 }
 
 #[derive(Clone, Serialize, Default, Debug, Deserialize, PartialEq)]
@@ -708,15 +689,9 @@ pub struct CreateChatCompletionRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub store: Option<bool>, // nullable: true, default: false
 
-    /// **o1 models only**
-    ///
-    /// Constrains effort on reasoning for
-    /// [reasoning models](https://platform.openai.com/docs/guides/reasoning).
-    ///
-    /// Currently supported values are `low`, `medium`, and `high`. Reducing
-    ///
-    /// reasoning effort can result in faster responses and fewer tokens
-    /// used on reasoning in a response.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub verbosity: Option<String>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reasoning_effort: Option<ReasoningEffort>,
 
@@ -863,13 +838,6 @@ pub struct CreateChatCompletionRequest {
     #[deprecated]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub function_call: Option<ChatCompletionFunctionCall>,
-
-    /// Deprecated in favor of `tools`.
-    ///
-    /// A list of functions the model may generate JSON inputs for.
-    #[deprecated]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub functions: Option<Vec<ChatCompletionFunctions>>,
 }
 
 /// Options for streaming response. Only set this when you set `stream: true`.
